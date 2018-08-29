@@ -1,12 +1,20 @@
+/****************
+Global Variables
+****************/
+let openCards = [];
+let numberMoves = 0;
+
 // Array with all different cards
-
 let allCards = ['fa-diamond', 'fa-paper-plane-o', 'fa-anchor',
-                'fa-bolt', 'fa-cube', 'fa-anchor', 'fa-leaf',
-                'fa-bicycle', 'fa-diamond', 'fa-bomb', 'fa-leaf',
-                'fa-bomb', 'fa-bolt', 'fa-bicycle', 'fa-paper-plane-o',
-                'fa-cube'];
+  'fa-bolt', 'fa-cube', 'fa-anchor', 'fa-leaf',
+  'fa-bicycle', 'fa-diamond', 'fa-bomb', 'fa-leaf',
+  'fa-bomb', 'fa-bolt', 'fa-bicycle', 'fa-paper-plane-o',
+  'fa-cube'
+];
 
-// Shuffle function from http://stackoverflow.com/a/2450976
+/********************************************************
+Shuffle function from http://stackoverflow.com/a/2450976
+********************************************************/
 function shuffle(array) {
   var currentIndex = array.length,
     temporaryValue, randomIndex;
@@ -19,6 +27,11 @@ function shuffle(array) {
   }
   return array;
 }
+
+//initial shuffle
+allCards = shuffle(allCards);
+updateHTML();
+
 /*****************************************
 Function to update HTML with updated cards
 *****************************************/
@@ -50,6 +63,7 @@ function resetGame() {
   //Reset the move counter
   const counterElement = document.querySelector('.moves');
   counterElement.textContent = 0;
+  numberMoves = 0;
   //Reset the stars
 }
 // Event Listener for Reset
@@ -63,21 +77,45 @@ const myDeck = document.querySelector('.deck');
 
 function responseToClick(event) {
   //increase counter 'moves'
-  const counterElement = document.querySelector('.moves');
-  counterElement.textContent = Number(counterElement.textContent) + 1;
+  if (event.target.nodeName == 'LI' && (event.target.classList.value.includes('open') == false)) {
+    const counterElement = document.querySelector('.moves');
+    counterElement.textContent = Number(counterElement.textContent) + 1;
+    numberMoves++;
 
-  //open the card
-  event.target.classList.add('show', 'open');
+    //open the card and push into open cards array
+    event.target.classList.add('show', 'open');
+    openCards.push(event.target);
+  };
 
-  //check what card it is
-  const listOfClasses = event.target.firstElementChild.className.split(' ');
-  const cardClass = listOfClasses[1];
-  console.log(cardClass);
+  //check if there are two open cards that need to be compared and compare them
+  //add or remove classes accordingly
+  if (openCards.length == 2) {
+    let cardOneClasses = openCards[0].firstElementChild.className.split(' ');
+    let cardOne = cardOneClasses[1];
+    let cardTwoClasses = openCards[1].firstElementChild.className.split(' ');
+    let cardTwo = cardTwoClasses[1];
+    if (cardOne == cardTwo) {
+      openCards[0].classList.add('match');
+      openCards[1].classList.add('match');
+      openCards = [];
+    } else {
+      setTimeout(function removeClasses() {
+        openCards[0].classList.remove('open', 'show');
+        openCards[1].classList.remove('open', 'show');
+        openCards = [];
+      }, 1500);
+    }
+  }
 };
 
 myDeck.addEventListener('click', responseToClick);
 
 /*
+Change the stars
+Show final message
+make sure you cannot open cards if other cards are still open
+
+
  * set up the event listener for a card. If a card is clicked:
  *  - display the card's symbol (put this functionality in another function that you call from this one)
  *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
