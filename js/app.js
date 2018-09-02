@@ -82,6 +82,15 @@ function responseToClick(event) {
     counterElement.textContent = Number(counterElement.textContent) + 1;
     numberMoves++;
 
+    /*decrease the stars if necessary
+    After 15 moves remove a star
+    After 30 moves remove a star
+    */
+    const starElement = document.querySelector('.stars');
+    if (numberMoves == 15 || numberMoves == 30) {
+      starElement.removeChild(starElement.firstElementChild);
+    };
+
     //open the card and push into open cards array
     event.target.classList.add('show', 'open');
     openCards.push(event.target);
@@ -111,7 +120,7 @@ function responseToClick(event) {
 myDeck.addEventListener('click', responseToClick);
 
 /*
-Change the stars
+Restore stars when resetting the game
 Show final message
 make sure you cannot open cards if other cards are still open
 
