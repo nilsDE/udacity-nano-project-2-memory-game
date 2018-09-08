@@ -197,8 +197,3 @@ btn.onclick = function() {
   modal.style.display = "none";
   resetGame();
 };
-
-/*
-Restore stars when resetting the game - ok but formatting is not 100%
-Show final message - create a modal - ok but ugly
-*/
