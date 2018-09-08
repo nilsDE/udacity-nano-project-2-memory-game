@@ -2,8 +2,8 @@
 
 ## Table of Contents
 
-* [Instructions](#instructions)
-* [How the game works](#How it works)
+* [Instructions]
+* [How the game works]
 
 ## Instructions
 
