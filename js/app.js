@@ -5,6 +5,7 @@ let openCards = [];
 let numberMoves = 0;
 let matchedCards = 0;
 let numberStars = 3;
+let firstClick = true;
 
 // Array with all different cards
 let allCards = ['fa-diamond', 'fa-paper-plane-o', 'fa-anchor',
@@ -18,7 +19,7 @@ let allCards = ['fa-diamond', 'fa-paper-plane-o', 'fa-anchor',
 Shuffle function from http://stackoverflow.com/a/2450976
 ********************************************************/
 function shuffle(array) {
-  var currentIndex = array.length,
+  let currentIndex = array.length,
     temporaryValue, randomIndex;
   while (currentIndex !== 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
@@ -65,10 +66,10 @@ function resetGame() {
   //Reset the stars
   const starsDisplay = document.querySelector('.stars');
   const htmlToAddStars = '<li><i class="fa fa-star"></i></li>';
-  if (numberMoves >= 30) {
+  if (numberMoves >= 40) {
     starsDisplay.insertAdjacentHTML('beforeend', htmlToAddStars);
     starsDisplay.insertAdjacentHTML('beforeend', htmlToAddStars);
-  } else if (numberMoves >= 15) {
+  } else if (numberMoves >= 25) {
     starsDisplay.insertAdjacentHTML('beforeend', htmlToAddStars);
   };
   numberStars = 3;
@@ -82,9 +83,9 @@ function resetGame() {
   openCards = [];
 
   //Reset time
+  clearInterval(intervalID);
   document.querySelector('.count-seconds').textContent = 0;
-  document.removeEventListener("click", startClock, {once: true});
-  document.addEventListener("click", startClock, {once: true});
+  firstClick = true;
 };
 
 // Event Listener for Reset
@@ -105,10 +106,6 @@ function updateTime() {
   timeElement.textContent = Number(timeElement.textContent) + 1;
 };
 
-document.addEventListener("click", startClock, {once: true});
-
-
-
 /*****************************************************
 Event listener that listens for cards being clicked on
 *****************************************************/
@@ -123,12 +120,18 @@ function responseToClick(event) {
       counterElement.textContent = Number(counterElement.textContent) + 1;
       numberMoves++;
 
+      //start time
+      if (firstClick == true) {
+        startClock();
+        firstClick = false;
+      };
+
       /*decrease the stars if necessary
-      After 15 moves remove a star
-      After 30 moves remove a star
+      After 25 moves remove a star
+      After 40 moves remove a star
       */
       const starElement = document.querySelector('.stars');
-      if (numberMoves == 15 || numberMoves == 30) {
+      if (numberMoves == 25 || numberMoves == 40) {
         starElement.removeChild(starElement.firstElementChild);
         numberStars -= 1;
       };
@@ -151,7 +154,9 @@ function responseToClick(event) {
         openCards = [];
         matchedCards += 2;
         if (matchedCards == 16) {
-          showModal();
+          setTimeout(function showingModal() {
+            showModal()
+          }, 1500);
           clearInterval(intervalID);
         };
       } else {
@@ -177,8 +182,10 @@ let modalText = document.querySelector('.text-modal');
 
 //Function to change the text of the modal and open it
 let showModal = function() {
-  let newTextOfModal = `It took you ${numberMoves} moves and ${document.querySelector('.count-seconds').textContent} seconds to win the game! ` +
-                        `You have been awarded ${numberStars} star(s)!`;
+  let newTextOfModal = `It took you ${numberMoves} moves and ` +
+    `${document.querySelector('.count-seconds').textContent}` +
+    ` seconds to win the game! ` +
+    `You have been awarded ${numberStars} star(s)!`;
   modalText.textContent = newTextOfModal;
   modal.style.display = "block";
 };
@@ -187,13 +194,11 @@ let showModal = function() {
 var btn = document.getElementById("myBtn");
 
 btn.onclick = function() {
-    modal.style.display = "none";
-    resetGame();
+  modal.style.display = "none";
+  resetGame();
 };
-
 
 /*
 Restore stars when resetting the game - ok but formatting is not 100%
 Show final message - create a modal - ok but ugly
-timer cannot be reset
 */
