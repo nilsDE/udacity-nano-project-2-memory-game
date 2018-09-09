@@ -81,6 +81,7 @@ function resetGame() {
 
   //Empty open cards
   openCards = [];
+  matchedCards = 0;
 
   //Reset time
   clearInterval(intervalID);
